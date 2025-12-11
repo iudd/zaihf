@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zai-2API 控制台</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 10px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .active { background-color: #28a745; }
+        .inactive { background-color: #dc3545; }
+        .api-box { background: #2d3436; color: #fff; padding: 10px; border-radius: 5px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary">⚡ Zai-2API 控制台</h2>
+            <span class="badge bg-dark">v2.0</span>
+        </header>
+
+        <div class="row g-4">
+            <!-- 左侧 -->
+            <div class="col-lg-4">
+                <!-- API 配置 -->
+                <div class="card p-3 mb-3 border-primary border-2">
+                    <h5 class="card-title fw-bold text-primary">🚀 API 配置</h5>
+                    <div class="mb-2">
+                        <label class="small text-muted">Base URL:</label>
+                        <div class="api-box">{{ api_url }}</div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="small text-muted">API Key:</label>
+                        <div class="api-box">1 (或 .env 中配置的密钥)</div>
+                    </div>
+                </div>
+
+                <!-- 添加账号 -->
+                <div class="card p-3">
+                    <h5 class="card-title mb-3">➕ 添加账号</h5>
+                    
+                    <div class="alert alert-info">
+                        <strong>💡 提示：</strong>点击按钮后，系统将自动打开浏览器窗口。<br>
+                        在浏览器中登录后，账号将自动保存。
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button class="btn btn-primary btn-lg" id="loginBtn">
+                            🌐 启动浏览器登录
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧 -->
+            <div class="col-lg-8">
+                <!-- 账号列表 -->
+                <div class="card p-3 mb-3">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title">👥 账号池 ({{ accounts|length }})</h5>
+                        <div>
+                            <span class="badge bg-success me-1">✅ {{ active_count or 0 }}</span>
+                            <span class="badge bg-danger">❌ {{ inactive_count or 0 }}</span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>健康状态</th>
+                                    <th>账号名称</th>
+                                    <th>来源</th>
+                                    <th>数据目录</th>
+                                    <th>Token状态</th>
+                                    <th>过期时间</th>
+                                    <th>调用次数</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for acc in accounts %}
+                                <tr>
+                                    <td>
+                                        {% if acc.is_active %}
+                                            {% if acc.token and acc.token|length > 50 %}
+                                                <span class="badge bg-success">✅ 正常</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">⚠️ Token异常</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">⏸️ 已禁用</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong>{{ acc.name }}</strong>
+                                        {% if acc.discord_username %}
+                                        <br><small class="text-muted">{{ acc.discord_username }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if acc.token_source == 'browser' %}
+                                        <span class="badge bg-info">🌐 浏览器</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">✋ 手动</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if acc.data_dir %}
+                                        <code class="small">{{ acc.data_dir }}</code>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if acc.token %}
+                                        <code class="small">{{ acc.token[:15] }}...</code>
+                                        {% else %}
+                                        <span class="text-danger">无Token</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if acc.expires_at %}
+                                        <small>{{ acc.expires_at[:16].replace('T', ' ') }}</small>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><span class="badge bg-light text-dark">{{ acc.total_calls }}</span></td>
+                                    <td>
+                                        {% if acc.token_source == 'browser' %}
+                                        <button class="btn btn-sm btn-primary me-1" onclick="refreshToken({{ acc.id }})" title="刷新Token">🔄</button>
+                                        {% endif %}
+                                        <a href="/api/account/toggle/{{ acc.id }}" class="btn btn-sm btn-outline-secondary me-1" title="启用/禁用">{% if acc.is_active %}⏸{% else %}▶{% endif %}</a>
+                                        <a href="/api/account/delete/{{ acc.id }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('确定删除账号 {{ acc.name }} 吗？')" title="删除">🗑</a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr><td colspan="8" class="text-center text-muted py-4">暂无账号，请点击左侧"启动浏览器登录"添加</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 日志 -->
+                <div class="card p-3 mb-3">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title">📊 最近调用日志</h5>
+                        <a href="/api/logs/clear" class="btn btn-sm btn-light">清空</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead><tr><th>时间</th><th>账号</th><th>模型</th><th>耗时</th><th>状态</th></tr></thead>
+                            <tbody>
+                                {% for log in logs %}
+                                <tr>
+                                    <td>{{ log.timestamp.split(' ')[1] if ' ' in log.timestamp else log.timestamp }}</td>
+                                    <td>{{ log.account_name }}</td>
+                                    <td>{{ log.model }}</td>
+                                    <td>{{ log.duration }}ms</td>
+                                    <td>
+                                        {% if log.status == 'SUCCESS' %}
+                                        <span class="badge bg-success">成功</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">失败</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Token状态检查 -->
+                <div class="card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title">🔍 Token状态检查</h5>
+                        <button class="btn btn-sm btn-info" onclick="checkTokenStatus()">检查状态</button>
+                    </div>
+                    <div id="tokenStatus" class="small text-muted">点击检查所有账号Token状态</div>
+                </div>
+
+                <!-- 服务控制 -->
+                <div class="card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title">⚙️ 服务控制</h5>
+                        <div>
+                            <button class="btn btn-sm btn-warning me-1" onclick="restartService()">🔄 重启服务</button>
+                            <button class="btn btn-sm btn-danger" onclick="stopService()">🛑 停止服务</button>
+                        </div>
+                    </div>
+                    <div class="small text-muted">
+                        重启或停止整个Zai-2API服务。停止后需要手动重新启动程序。
+                    </div>
+                </div>
+
+                <!-- 自动刷新管理 -->
+                <div class="card p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title">🔄 自动刷新管理</h5>
+                        <div>
+                            <button class="btn btn-sm btn-success me-1" onclick="startAutoRefresh()">启动</button>
+                            <button class="btn btn-sm btn-warning me-1" onclick="stopAutoRefresh()">停止</button>
+                            <button class="btn btn-sm btn-danger me-1" onclick="forceRefreshAll()">强制刷新</button>
+                            <button class="btn btn-sm btn-info" id="previewModeBtn" onclick="togglePreviewMode()">👁️ 开启预览</button>
+                        </div>
+                    </div>
+                    <div id="refreshStatus" class="small">
+                        <div class="d-flex align-items-center">
+                            <span id="refreshIndicator" class="me-2 text-success">🟢</span>
+                            <span id="refreshText" class="text-success">自动刷新服务运行中（每小时检查一次）</span>
+                        </div>
+                    </div>
+                    <div id="previewModeIndicator" class="small text-muted mt-2">
+                        <span class="text-muted">预览模式已关闭（刷新Token时将在后台静默运行）</span>
+                    </div>
+                </div>
+
+                <!-- 凭据库管理 -->
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title">🔐 登录凭据管理</h5>
+                        <button class="btn btn-sm btn-primary" onclick="showCredentialsModal()">管理凭据</button>
+                    </div>
+                    <div class="small text-muted">添加账号的登录凭据以支持自动刷新</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 浏览器登录
+        document.getElementById('loginBtn').addEventListener('click', async function() {
+            var name = prompt("请输入账号名称:", "我的账号");
+            if (!name) return;
+            
+            var btn = this;
+            var originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '⏳ 启动中...';
+            btn.className = 'btn btn-warning btn-lg';
+            
+            try {
+                var formData = new FormData();
+                formData.append('name', name);
+                
+                var res = await fetch('/api/account/login/start', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                var data = await res.json();
+                
+                if (data.success) {
+                    alert("✅ " + data.message);
+                    window.location.reload();
+                } else {
+                    alert("❌ " + data.message);
+                }
+            } catch (e) {
+                alert("❌ 错误: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                btn.className = 'btn btn-primary btn-lg';
+            }
+        });
+        
+        // 刷新Token
+        async function refreshToken(accountId) {
+            if (!confirm('确定要刷新此账号的Token吗？')) return;
+            
+            try {
+                var res = await fetch('/api/token/refresh/' + accountId, {
+                    method: 'POST'
+                });
+                var data = await res.json();
+                
+                if (data.success) {
+                    alert('✅ 刷新成功');
+                    window.location.reload();
+                } else {
+                    alert('❌ 刷新失败');
+                }
+            } catch (e) {
+                alert('❌ 错误: ' + e.message);
+            }
+        }
+        
+        // Token状态检查（如果页面上有这个按钮）
+        async function checkTokenStatus() {
+            alert('此功能暂未实现');
+        }
+        
+        // 自动刷新控制（如果页面上有这些按钮）
+        async function startAutoRefresh() {
+            alert('自动刷新服务已在后台运行');
+        }
+        
+        async function stopAutoRefresh() {
+            alert('此功能暂未实现');
+        }
+        
+        async function forceRefreshAll() {
+            if (!confirm('确定要强制刷新所有浏览器账号吗？')) return;
+            alert('此功能暂未实现');
+        }
+        
+        // 预览模式切换
+        var previewModeEnabled = false;
+        function togglePreviewMode() {
+            previewModeEnabled = !previewModeEnabled;
+            var btn = document.getElementById('previewModeBtn');
+            var indicator = document.getElementById('previewModeIndicator');
+            
+            if (previewModeEnabled) {
+                btn.innerHTML = '👁️ 关闭预览';
+                btn.className = 'btn btn-sm btn-warning';
+                indicator.innerHTML = '<span class="text-warning">👁️ 预览模式已开启（刷新Token时将显示浏览器窗口）</span>';
+            } else {
+                btn.innerHTML = '👁️ 开启预览';
+                btn.className = 'btn btn-sm btn-info';
+                indicator.innerHTML = '<span class="text-muted">预览模式已关闭（刷新Token时将在后台静默运行）</span>';
+            }
+            
+            // 发送到后端
+            fetch('/api/settings/preview-mode', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({enabled: previewModeEnabled})
+            });
+        }
+        
+        // 凭据管理
+        function showCredentialsModal() {
+            alert('💡 凭据管理提示\n\n' +
+                  '当前系统使用"浏览器登录"方式，登录状态已自动保存。\n\n' +
+                  '✅ 优点：\n' +
+                  '• 无需手动管理密码\n' +
+                  '• 浏览器自动记住登录状态\n' +
+                  '• Token会自动刷新\n\n' +
+                  '如需添加新账号，请点击"启动浏览器登录"');
+        }
+        
+        // 服务控制
+        async function restartService() {
+            if (!confirm('⚠️ 确定要重启服务吗？\n\n服务将在3秒后重启，期间所有API调用会中断。')) return;
+            
+            alert('🔄 服务重启功能需要配合进程管理工具（如PM2、Supervisor）\n\n当前请手动操作：\n1. 在命令行按 Ctrl+C 停止\n2. 重新运行 start.bat');
+        }
+        
+        async function stopService() {
+            if (!confirm('⚠️ 确定要停止服务吗？\n\n停止后需要手动运行 start.bat 重新启动。')) return;
+            
+            try {
+                var res = await fetch('/api/service/stop', {method: 'POST'});
+                var data = await res.json();
+                
+                if (data.success) {
+                    alert('🛑 ' + data.message);
+                    document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;"><h1 style="color:#dc3545;">🛑 服务已停止</h1><p>请运行 start.bat 重新启动服务</p></div>';
+                }
+            } catch (e) {
+                alert('服务可能已停止');
+            }
+        }
+    </script>
+</body>
+</html>

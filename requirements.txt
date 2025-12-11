@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pydantic-settings
+python-dotenv
+cloudscraper
+httpx
+loguru
+jinja2
+python-multipart
+playwright

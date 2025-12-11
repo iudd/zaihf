@@ -1,0 +1,2 @@
+直接那啥启动这个start.bat即可，或者你要先确保requirements.txt的依赖都有安装
+可以先进行python pip requirements.txt一下
