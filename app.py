@@ -48,23 +48,10 @@ def ensure_playwright():
 print("🔍 检查 Playwright 浏览器...")
 ensure_playwright()
 
-# 创建新的 FastAPI 应用实例
-app = FastAPI(title=settings.APP_NAME, lifespan=None)
-
-# 添加 CORS 中间件，允许跨域访问
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# 启动时的初始化函数
-async def startup_init():
-    """
-    应用启动时的初始化操作
-    """
+# 定义 lifespan 事件处理器
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 启动时的初始化操作
     from pathlib import Path
     
     # 确保必要的目录存在
@@ -82,11 +69,23 @@ async def startup_init():
     
     logger.info(f"🚀 {settings.APP_NAME} v{settings.APP_VERSION} 已在 Hugging Face Space 上启动")
     logger.info(f"🌐 服务地址: https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME")
+    
+    yield
+    
+    # 关闭时的清理操作（如果需要）
+    logger.info("🛑 应用正在关闭...")
 
-# 在 FastAPI 应用启动时执行初始化
-@app.on_event("startup")
-async def on_startup():
-    await startup_init()
+# 创建新的 FastAPI 应用实例，使用 lifespan 事件处理器
+app = FastAPI(title=settings.APP_NAME, lifespan=lifespan)
+
+# 添加 CORS 中间件，允许跨域访问
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 导入 main.py 中的所有路由
 from main import *
