@@ -1,13 +1,24 @@
-# 🚀 Zai-2API: 解锁 Zai.is 的无限潜能 (Python版)
+---
+title: ZAI-2API
+emoji: 🤖
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+license: apache-2.0
+---
 
+# 🚀 ZAI-2API: 解锁 Zai.is 的无限潜能 (Hugging Face Space 版)
+
+[![Hugging Face Spaces](https://img.shields.io/badge/🤖%20Hugging%20Face-Spaces-blue.svg)](https://huggingface.co/spaces)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-green?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Playwright](https://img.shields.io/badge/Playwright-1.40+-orange?logo=playwright&logoColor=white)](https://playwright.dev/)
 [![OpenAI Compatible](https://img.shields.io/badge/API-OpenAI%20Compatible-purple?logo=openai&logoColor=white)](https://platform.openai.com/)
 [![License Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue)](https://opensource.org/licenses/Apache-2.0)
 
-> **🌐 GitHub 仓库**: [https://github.com/lza6/zai.is-2api-python](https://github.com/lza6/zai.is-2api-python)
-> **🚀 Hugging Face Space**: [点击部署](https://huggingface.co/new-space?template=lza6/zai.is-2api-python)
+> **🌐 GitHub 仓库**: [https://github.com/iudd/zaihf](https://github.com/iudd/zaihf)
+> **🚀 Hugging Face Space**: [点击使用](https://huggingface.co/spaces/iyougame/zaihf)
 
 ---
 
@@ -90,68 +101,66 @@ graph TB
 
 ---
 
-## 🚀 快速开始 (5 分钟部署)
+## 🚀 快速开始 (Hugging Face Space)
 
-### 🌐 部署方式一：Hugging Face Space (推荐，零配置)
+### 1️⃣ 访问 Space
 
-[![Hugging Face Spaces](https://img.shields.io/badge/🤖%20Hugging%20Face-Spaces-blue.svg)](https://huggingface.co/spaces)
+直接访问已部署的 Space：
+```
+https://huggingface.co/spaces/iyougame/zaihf
+```
 
-1. 点击 [**在 Hugging Face Space 上部署**](https://huggingface.co/new-space?template=lza6/zai.is-2api-python)
-2. 选择一个 Space 名称（例如 `my-zai-api`）
-3. 点击 "Create Space" 开始部署
-4. 等待约 2-3 分钟，部署完成后即可使用
+### 2️⃣ 添加 Zai.is 账号
 
-> ✅ **优点**: 无需本地安装、自动更新、免费使用、高可用性
+1. 在 Space 页面中，点击 **"🌐 启动浏览器登录"** 按钮
+2. 在弹出的浏览器窗口中完成 Discord 登录
+3. 登录成功后关闭浏览器，Token 将自动保存
+
+### 3️⃣ 使用 API
+
+Space 启动后，你可以使用以下 API：
+
+- **模型列表**: `GET /v1/models`
+- **对话接口**: `POST /v1/chat/completions`
+- **账号管理**: 通过 Web 界面管理多个 Zai.is 账号
 
 ---
 
-### 🏠 部署方式二：本地运行 (传统方式)
+## 🔧 API 使用示例
 
-### 1️⃣ 环境准备
-确保你的系统已安装 **Python 3.9+**：
-```bash
-python --version
-# Python 3.11.0 或更高版本
+### Python 客户端
+
+```python
+import openai
+
+# 配置 OpenAI 客户端指向 Hugging Face Space
+client = openai.OpenAI(
+    api_key="1",  # 默认密钥
+    base_url="https://iyougame-zaihf.hf.space/v1"
+)
+
+# 发送聊天请求
+response = client.chat.completions.create(
+    model="gpt-5-2025-08-07",
+    messages=[
+        {"role": "user", "content": "你好，请介绍一下自己"}
+    ]
+)
+
+print(response.choices[0].message.content)
 ```
 
-### 2️⃣ 获取项目
-**方法 A：Git 克隆（推荐）**
+### cURL 示例
+
 ```bash
-git clone https://github.com/lza6/zai.is-2api-python.git
-cd zai.is-2api-python
+curl -X POST "https://iyougame-zaihf.hf.space/v1/chat/completions" \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer 1" \
+     -d '{
+           "model": "gpt-5-2025-08-07",
+           "messages": [{"role": "user", "content": "你好"}]
+         }'
 ```
-
-**方法 B：直接下载**
-1. 访问 [GitHub 仓库](https://github.com/lza6/zai.is-2api-python)
-2. 点击 `Code` → `Download ZIP`
-3. 解压到本地目录
-
-### 3️⃣ 一键安装
-在项目根目录运行：
-```bash
-# 安装 Python 依赖
-pip install -r requirements.txt
-
-# 安装 Playwright 浏览器内核
-playwright install chromium
-```
-
-### 4️⃣ 启动服务
-**Windows 用户：**
-- 双击 `start.bat` 文件
-- 或命令行运行：`python main.py`
-
-**macOS/Linux 用户：**
-```bash
-python main.py
-```
-
-### 5️⃣ 首次配置
-1. 打开浏览器访问：`http://localhost:8000`
-2. 点击 **"🌐 启动浏览器登录"** 按钮
-3. 在弹出的浏览器窗口中完成 Discord 登录
-4. 登录成功后关闭浏览器，Token 自动保存
-5. 现在可以开始使用 API 了！🎉
 
 ---
 
@@ -207,159 +216,11 @@ sequenceDiagram
     end
 ```
 
-### 🛡️ 反检测技术实现
-```python
-# 关键反检测配置
-context = await browser.new_context(
-    viewport={'width': 1920, 'height': 1080},
-    user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    # 移除自动化特征
-    bypass_csp=True,
-    ignore_https_errors=True,
-    java_script_enabled=True,
-    has_touch=False,
-    is_mobile=False,
-    extra_http_headers={
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-        'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120"',
-    }
-)
-
-# 注入脚本消除 WebDriver 特征
-await page.add_init_script("""
-    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-    window.chrome = { runtime: {} };
-    Object.defineProperty(navigator, 'plugins', {
-        get: () => [1, 2, 3, 4, 5]
-    });
-""")
-```
-
 ---
 
-## 🔧 详细配置指南
+## 📋 支持的模型
 
-### 📁 目录结构说明
-```
-zai-2api/
-├── 📁 accounts_data/     # 浏览器用户数据（自动生成）
-│   ├── acc_20250101_120000/
-│   │   └── browser_data/  # Playwright 持久化数据
-│   └── ...
-├── 📁 app/               # 应用核心代码
-│   ├── 📁 core/          # 核心模块
-│   │   ├── config.py     # 配置管理
-│   │   └── db_manager.py # 数据库管理（单例模式）
-│   ├── 📁 providers/     # 平台提供者
-│   │   └── zai_provider.py # Zai.is API 封装
-│   └── 📁 utils/         # 工具类
-│       ├── token_auto_refresh_service.py # 自动刷新服务
-│       └── ...
-├── 📁 data/              # SQLite 数据库文件
-│   └── zai.db           # 主数据库
-├── 📁 media/             # 图片缓存（自动清理）
-├── 📁 templates/         # Web 界面模板
-│   └── dashboard.html   # 控制台界面
-├── .env                 # 环境变量配置
-├── main.py              # FastAPI 应用入口
-├── requirements.txt     # Python 依赖
-└── start.bat           # Windows 启动脚本
-```
-
-### ⚙️ 环境变量配置
-创建或编辑 `.env` 文件：
-```ini
-# === 安全配置 ===
-API_MASTER_KEY=your_secret_key_here  # API 访问密钥
-PORT=8000                           # 服务端口
-
-# === 路径配置 ===
-DB_PATH=data/zai.db                # 数据库路径
-USER_DATA_DIR=zai_user_data        # 用户数据目录
-
-# === 高级选项 ===
-# REFRESH_INTERVAL=3600            # Token 刷新间隔（秒）
-# PREVIEW_MODE=false               # 是否显示浏览器窗口
-```
-
----
-
-## 📡 API 接口文档
-
-### 🤖 OpenAI 兼容接口
-所有接口都遵循 **OpenAI API 规范**，可以直接对接各种 AI 客户端。
-
-#### 对话补全
-```http
-POST /v1/chat/completions
-Content-Type: application/json
-Authorization: Bearer your_api_key
-
-{
-  "model": "gpt-5-2025-08-07",
-  "messages": [
-    {"role": "user", "content": "你好，请介绍一下自己"}
-  ],
-  "stream": true,
-  "temperature": 0.7,
-  "max_tokens": 1000
-}
-```
-
-#### 获取模型列表
-```http
-GET /v1/models
-```
-
-### 🛠️ 管理接口
-
-#### 启动浏览器登录
-```http
-POST /api/account/login/start
-Content-Type: application/x-www-form-urlencoded
-
-name=我的账号
-```
-
-#### 手动添加账号
-```http
-POST /api/account/add
-Content-Type: application/x-www-form-urlencoded
-
-name=手动账号&token=eyJhbGciOiJIUzI1NiIs...
-```
-
-#### 强制刷新所有账号
-```http
-POST /api/refresh/force
-```
-
-#### 获取账号状态
-```http
-GET /api/account/status
-```
-
-### 🖼️ 图片处理特性
-当 AI 返回包含 base64 图片的响应时：
-```markdown
-# AI 原始响应
-![image](data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...)
-
-# 代理后响应
-![image](http://localhost:8000/media/abc123.png)
-```
-
-**自动处理流程：**
-1. ✅ 检测 base64 图片数据
-2. ✅ 解码并保存为 PNG/JPG 文件
-3. ✅ 替换为本地可访问 URL
-4. ✅ 30 分钟后自动清理
-
----
-
-## 🎯 支持的 AI 模型
-
-Zai-2API 支持 Zai.is 平台上的所有主流模型：
+ZAI-2API 支持 Zai.is 平台上的所有主流模型：
 
 | 模型 ID | 显示名称 | 提供商 | 能力 |
 |---------|----------|--------|------|
@@ -384,139 +245,47 @@ Zai-2API 支持 Zai.is 平台上的所有主流模型：
 
 | 问题 | 可能原因 | 解决方案 |
 |------|----------|----------|
-| **无法启动浏览器** | Playwright 未正确安装 | 运行 `playwright install chromium` |
+| **无法启动浏览器** | Playwright 未正确安装 | Space 已自动安装，如仍有问题请等待重启 |
 | **登录后无法获取 Token** | Discord 登录流程变更 | 检查浏览器控制台日志，可能需要更新选择器 |
-| **Token 频繁过期** | 刷新间隔设置不当 | 检查网络稳定性，调整 `REFRESH_INTERVAL` |
+| **Token 频繁过期** | 刷新间隔设置不当 | 检查网络稳定性，系统会自动刷新 |
 | **API 响应缓慢** | 网络问题或账号限制 | 使用多账号轮询，检查代理设置 |
-| **图片无法显示** | 跨域问题或路径错误 | 确保客户端能访问 `http://localhost:8000/media/` |
-
-### 📋 调试模式
-启动服务时添加调试参数：
-```bash
-# Windows
-set LOG_LEVEL=DEBUG && python main.py
-
-# macOS/Linux
-LOG_LEVEL=DEBUG python main.py
-```
-
-查看详细日志了解问题所在。
+| **图片无法显示** | 跨域问题或路径错误 | 确保客户端能访问 Space 的 /media/ 路径 |
 
 ---
 
-## 📈 性能优化建议
+## 🚨 注意事项
 
-### 🚀 提升并发能力
-1. **多账号轮询**：添加多个 Zai.is 账号，系统会自动负载均衡
-2. **连接池优化**：调整 `httpx.AsyncClient` 的连接池大小
-3. **缓存策略**：对频繁请求的模型信息进行缓存
+### 使用限制
 
-### 💾 资源管理
-```python
-# 在 zai_provider.py 中优化连接管理
-async with httpx.AsyncClient(
-    timeout=120.0,
-    limits=httpx.Limits(
-        max_connections=100,
-        max_keepalive_connections=50
-    ),
-    http2=True  # 启用 HTTP/2
-) as client:
-    # 请求代码...
-```
+1. **账号有效性**: 必须使用有效的 Zai.is 账号
+2. **请求频率**: 避免过高频率请求，防止账号被封
+3. **资源限制**: Hugging Face Space 有计算资源限制
+4. **数据隐私**: 请勿发送敏感信息
 
----
+### 常见问题
 
-## 🔮 未来发展路线图
+**Q: 浏览器登录失败怎么办？**
+A: 确保浏览器能够正常访问 zai.is，并完成 Discord 验证。
 
-```mermaid
-gantt
-    title Zai-2API 开发路线图
-    dateFormat  YYYY-MM
-    section 🚀 核心功能
-    多账号负载均衡      :done, 2024-12, 30d
-    自动刷新服务        :done, 2024-12, 30d
-    图片代理系统        :done, 2024-12, 30d
-    高级反检测机制      :active, 2025-01, 30d
-    
-    section 🐳 部署优化
-    Docker 容器化       :2025-01, 30d
-    Kubernetes 部署      :2025-02, 45d
-    CI/CD 流水线        :2025-02, 30d
-    
-    section 🔌 生态扩展
-    插件系统            :2025-03, 45d
-    WebSocket 支持      :2025-03, 30d
-    第三方平台对接      :2025-04, 60d
-    
-    section 📊 监控管理
-    性能监控面板        :2025-04, 45d
-    使用量统计分析      :2025-05, 30d
-    自动化测试套件      :2025-05, 45d
-```
+**Q: Token 频繁过期？**
+A: 系统会自动刷新，但请确保网络连接稳定。
+
+**Q: API 响应缓慢？**
+A: 可以添加多个账号实现负载均衡，提高响应速度。
 
 ---
 
-## 🤝 如何贡献
+## 📞 技术支持
 
-我们欢迎各种形式的贡献！🎉
-
-### 🐛 报告 Bug
-1. 在 [GitHub Issues](https://github.com/lza6/zai.is-2api-python/issues) 查看是否已有相关报告
-2. 创建新的 Issue，描述详细复现步骤
-3. 包括：环境信息、错误日志、期望行为
-
-### 💡 功能建议
-1. 先在 Issues 中讨论想法
-2. 描述使用场景和预期收益
-3. 如果可以，提供原型代码或设计思路
-
-### 🔧 提交代码
-1. Fork 本仓库
-2. 创建特性分支：`git checkout -b feature/amazing-feature`
-3. 提交更改：`git commit -m 'Add amazing feature'`
-4. 推送到分支：`git push origin feature/amazing-feature`
-5. 创建 Pull Request
-
-### 📚 改进文档
-- 修正拼写错误或语法问题
-- 补充使用示例
-- 翻译为其他语言
-- 添加图表或示意图
+- **项目主页**: [GitHub 仓库](https://github.com/iudd/zaihf)
+- **问题反馈**: [GitHub Issues](https://github.com/iudd/zaihf/issues)
+- **Hugging Face Space**: [Space 主页](https://huggingface.co/spaces/iyougame/zaihf)
 
 ---
 
-## ⚖️ 法律与道德声明
+## ⚖️ 免责声明
 
-### 📜 许可证
-本项目采用 **Apache License 2.0** 开源协议。
-
-**你可以：**
-- ✅ 自由使用、复制、修改本软件
-- ✅ 用于个人、商业或教育目的
-- ✅ 分发修改后的版本
-- ✅ 申请专利授权
-
-**你需要：**
-- 📝 保留原始版权和许可声明
-- ⚖️ 在修改文件中明确说明更改内容
-- 📄 在分发时附带 Apache 2.0 许可证副本
-
-### 🛡️ 道德使用指南
-**请务必：**
-- 🔒 仅用于合法授权的研究和学习目的
-- 👥 尊重原平台的服务条款
-- 📊 合理控制请求频率，避免给目标服务器造成负担
-- 🤝 尊重其他用户和开发者的权益
-
-**请勿：**
-- 🚫 用于任何违法或不道德的活动
-- 🚫 大规模爬取或商业滥用
-- 🚫 攻击或破坏目标服务
-- 🚫 侵犯他人的知识产权
-
-### ⚠️ 免责声明
-本项目仅供**技术研究和学习交流**使用。使用者应对自己的行为负全部责任。开发者不对因使用本项目而产生的任何直接或间接损失负责。
+本项目仅供技术研究和学习交流使用。使用者应对自己的行为负全部责任。开发者不对因使用本项目而产生的任何直接或间接损失负责。
 
 > **技术本身是中立的，但技术的使用应有边界。让我们共同维护一个健康、合法的技术生态。** 🌱
 
@@ -524,51 +293,14 @@ gantt
 
 ## 🌟 特别感谢
 
-- **Zai.is 团队** - 提供优秀的 AI 平台
-- **Playwright 社区** - 强大的浏览器自动化工具
-- **FastAPI 项目** - 高性能的 Web 框架
-- **所有贡献者** - 让这个项目变得更好
-- **开源精神** - 代码改变世界，分享创造价值
+感谢以下开源项目和社区的支持：
+
+- **Hugging Face** - 提供 Spaces 平台
+- **FastAPI** - 高性能 Web 框架
+- **Playwright** - 浏览器自动化工具
+- **Zai.is** - 提供优质的 AI 服务
 
 ---
 
-## 📞 支持与交流
-
-遇到问题或有建议？我们提供多种支持渠道：
-
-| 渠道 | 用途 | 响应时间 |
-|------|------|----------|
-| [GitHub Issues](https://github.com/lza6/zai.is-2api-python/issues) | Bug 报告、功能建议 | 1-3 天 |
-| GitHub Discussions | 技术讨论、使用交流 | 1-2 天 |
-| 项目 Wiki | 详细文档、教程 | 持续更新 |
-| Discord 社区 | 实时交流、快速帮助 | 即时 |
-
----
-
-## 📊 项目统计
-
-<div align="center">
-
-![GitHub Stars](https://img.shields.io/github/stars/lza6/zai.is-2api-python?style=for-the-badge&logo=github)
-![GitHub Forks](https://img.shields.io/github/forks/lza6/zai.is-2api-python?style=for-the-badge&logo=github)
-![GitHub Issues](https://img.shields.io/github/issues/lza6/zai.is-2api-python?style=for-the-badge&logo=github)
-![GitHub License](https://img.shields.io/github/license/lza6/zai.is-2api-python?style=for-the-badge&logo=github)
-
-**最后更新：** 2025年12月11日 23:00:24
-**活跃状态：** 🟢 积极维护  
-**推荐 Python 版本：** 3.11+
-
-</div>
-
----
-
-> **💖 Made with passion and countless cups of coffee by [lza6](https://github.com/lza6)**  
-> *If this project helps you, please give it a ⭐ on GitHub!*
-
----
-
-<div align="center">
-  
-**✨ 技术自由，始于分享 ✨**
-
-</div>
+**最后更新**: 2025年12月23日  
+**版本**: 2.0.0 (Hugging Face Space)
