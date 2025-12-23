@@ -1,0 +1,42 @@
+---
+title: ZAI-2API
+emoji: 🤖
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+license: apache-2.0
+app_file: app.py
+---
+
+# Hugging Face Space 配置
+
+## 🚀 部署说明
+
+1. 将此项目代码上传到 Hugging Face Space
+2. Space 将自动构建和部署
+3. 部署完成后，可以通过 Space URL 访问服务
+
+## 📝 环境变量
+
+以下环境变量可以在 Space 设置中配置：
+
+- `HF_SPACE`: 设置为 `true` 表示是 Hugging Face Space 环境
+- `SPACE_ID`: Space 的 ID
+- `HF_TOKEN`: Hugging Face 访问令牌（如果需要）
+- `API_MASTER_KEY`: API 访问密钥（可选，默认为 "1"）
+- `PORT`: 服务端口（默认为 7860）
+
+## 🛠️ 技术栈
+
+- Python 3.9+
+- FastAPI
+- Playwright
+- SQLite
+- Uvicorn
+
+## 📋 系统要求
+
+- 内存: 最少 2GB，推荐 4GB+
+- 存储: 最少 1GB
+- CPU: 2 核心以上

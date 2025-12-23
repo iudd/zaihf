@@ -105,10 +105,22 @@ async def lifespan(app: FastAPI):
     # 3. 启动图片管理清理任务
     image_manager.start_cleanup_task()
     
-    logger.info(f"🌐 服务地址: http://localhost:{settings.PORT}")
+    # 4. 确保必要的目录存在
+    import os
+    from pathlib import Path
+    dirs = ["data", "media", "static", "templates", "accounts_data", "zai_user_data"]
+    for dir_name in dirs:
+        Path(dir_name).mkdir(exist_ok=True, parents=True)
+    
+    # 5. 显示启动信息
+    if settings.HF_SPACE:
+        logger.info(f"🌐 Hugging Face Space 服务地址: https://huggingface.co/spaces/{settings.HF_SPACE_ID}")
+    else:
+        logger.info(f"🌐 本地服务地址: http://localhost:{settings.PORT}")
+    
     yield
     
-    # 3. 停止服务
+    # 6. 停止服务
     auto_refresh_service.stop()
     logger.info("🛑 服务已停止")
 
@@ -197,13 +209,21 @@ async def dashboard(request: Request):
     active_count = len([acc for acc in accounts if acc["is_active"]])
     inactive_count = len(accounts) - active_count
     
+    # 根据环境设置 API URL
+    if settings.HF_SPACE:
+        api_url = f"https://{settings.HF_SPACE_ID.replace('/', '-')}.hf.space"
+    else:
+        api_url = f"http://localhost:{settings.PORT}"
+    
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
-        "api_url": f"http://localhost:{settings.PORT}",
+        "api_url": api_url,
         "accounts": accounts,
         "active_count": active_count,
         "inactive_count": inactive_count,
-        "logs": logs
+        "logs": logs,
+        "is_hf_space": settings.HF_SPACE,
+        "space_id": settings.HF_SPACE_ID
     })
 
 # --- API 路由 (账号管理) ---

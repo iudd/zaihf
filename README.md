@@ -7,6 +7,7 @@
 [![License Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue)](https://opensource.org/licenses/Apache-2.0)
 
 > **🌐 GitHub 仓库**: [https://github.com/lza6/zai.is-2api-python](https://github.com/lza6/zai.is-2api-python)
+> **🚀 Hugging Face Space**: [点击部署](https://huggingface.co/new-space?template=lza6/zai.is-2api-python)
 
 ---
 
@@ -90,6 +91,21 @@ graph TB
 ---
 
 ## 🚀 快速开始 (5 分钟部署)
+
+### 🌐 部署方式一：Hugging Face Space (推荐，零配置)
+
+[![Hugging Face Spaces](https://img.shields.io/badge/🤖%20Hugging%20Face-Spaces-blue.svg)](https://huggingface.co/spaces)
+
+1. 点击 [**在 Hugging Face Space 上部署**](https://huggingface.co/new-space?template=lza6/zai.is-2api-python)
+2. 选择一个 Space 名称（例如 `my-zai-api`）
+3. 点击 "Create Space" 开始部署
+4. 等待约 2-3 分钟，部署完成后即可使用
+
+> ✅ **优点**: 无需本地安装、自动更新、免费使用、高可用性
+
+---
+
+### 🏠 部署方式二：本地运行 (传统方式)
 
 ### 1️⃣ 环境准备
 确保你的系统已安装 **Python 3.9+**：
